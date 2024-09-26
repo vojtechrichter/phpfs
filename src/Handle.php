@@ -83,4 +83,71 @@ final class Handle
             throw new PhpfsException("Specified path is not a file nor a directory");
         }
     }
+
+    public static function getFileSize(string $filename): int|false
+    {
+        if (file_exists($filename)) {
+            $size = filesize($filename);
+            if ($size !== false) {
+                return $size;
+            } else {
+                return false;
+            }
+        } else {
+            throw new PhpfsException("File does not exist");
+        }
+    }
+
+    public static function isDirectory(string $path): bool
+    {
+        return is_dir($path);
+    }
+
+    public static function isFile(string $path): bool
+    {
+        return is_file($path);
+    }
+
+    public static function isExecutable(string $path): bool
+    {
+        return is_executable($path);
+    }
+
+    /**
+     * Possible return value are: fifo, char, dir, block, link, file, socket, unknown.
+     *
+     * @throws PhpfsException
+     */
+    public static function getFileType(string $path): string
+    {
+        $filetype = filetype($path);
+        if ($filetype !== false) {
+            return $filetype;
+        } else {
+            throw new PhpfsException("Failed to get file type of \'$path\'");
+        }
+    }
+
+    /**
+     * @throws PhpfsException
+     */
+    public static function makeDirectory(string $path, int $permissions, bool $recursive): void
+    {
+        if (!mkdir($path, $permissions, $recursive)) {
+            throw new PhpfsException("Failed to create directory \'$path\'");
+        }
+    }
+
+    /**
+     * @throws PhpfsException
+     */
+    public static function createFile(string $name): void
+    {
+        $file = fopen($name, 'w');
+        if ($file !== false) {
+            fclose($file);
+        } else {
+            throw new PhpfsException("Failed to create file \'$name\'");
+        }
+    }
 }
