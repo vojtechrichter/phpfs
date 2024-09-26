@@ -1,0 +1,58 @@
+<?php declare(strict_types=1);
+
+namespace Phpfs;
+
+use Phpfs\Exceptions\PhpfsException;
+
+final class Handle
+{
+    /**
+     * @throws PhpfsException
+     */
+    public static function rename(string $file_or_dir_name, string $new_name): void
+    {
+        if (!rename($file_or_dir_name, $new_name)) {
+            throw new PhpfsException("Failed to rename \'$file_or_dir_name\' to \'$new_name\'");
+        }
+    }
+
+    /**
+     * @throws PhpfsException
+     */
+    public static function copyFile(string $source, string $destination): void
+    {
+        if (!copy($source, $destination)) {
+            throw new PhpfsException("Failed to copy \'$source\' to \'$destination\'");
+        }
+    }
+
+    /**
+     * @throws PhpfsException
+     */
+    public static function moveFile(string $source, string $destination): void
+    {
+        self::copyFile($source, $destination);
+    }
+
+    public static function fileOrDirExists(string $name): bool
+    {
+        return file_exists($name);
+    }
+
+    public static function getFreeDiskSpace(string $directory): float|false
+    {
+        return disk_free_space($directory);
+    }
+
+    /**
+     * Permissions param should be supplied like this: Permission::calculatePermissions([PermissionCode::READ, PermissionCode::EXECUTE], [PermissionCode::NONE], [PermissionCode::WRITE])
+     *
+     * @throws PhpfsException
+     */
+    public static function changeMode(string $name, int $permissions): void
+    {
+        if (!chmod($name, $permissions)) {
+            throw new PhpfsException("Failed to change mode on \'$name\' to $permissions");
+        }
+    }
+}
