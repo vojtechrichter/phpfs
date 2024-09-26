@@ -55,4 +55,32 @@ final class Handle
             throw new PhpfsException("Failed to change mode on \'$name\' to $permissions");
         }
     }
+
+    /**
+     * @throws PhpfsException
+     */
+    public static function changeOwner(string $name, string|int $user): void
+    {
+        if (!chown($name, $user)) {
+            throw new PhpfsException("Failed to change owner on \'$name\' to \'$user\'");
+        }
+    }
+
+    /**
+     * @throws PhpfsException
+     */
+    public static function remove(string $name): void
+    {
+        if (is_file($name)) {
+            if (!unlink($name)) {
+                throw new PhpfsException("Failed to remove file \'$name\'");
+            }
+        } else if (is_dir($name)) {
+            if (!rmdir($name)) {
+                throw new PhpfsException("Failed to remove directory \'$name\'");
+            }
+        } else {
+            throw new PhpfsException("Specified path is not a file nor a directory");
+        }
+    }
 }
